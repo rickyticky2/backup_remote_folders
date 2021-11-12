@@ -1,9 +1,9 @@
 #!/bin/bash
 #ip адрес сервера бэкапов
 remote_ip=34.118.126.130
-#Дирриктория
+#Директория 
 dir_addr_b=/home/ubuntu/Project/
-#Дирриктория бэкапов
+#Директория  бэкапов
 dir_addr_r=/home/ubuntu/backup/
 #Пользователь сервера бэкапов
 remote_user=ubuntu
