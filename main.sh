@@ -2,17 +2,17 @@
 #ip адрес сервера бэкапов
 remote_ip=34.118.126.130
 #Дирриктория
-dir_addr_b=/home/azverev/Project/
+dir_addr_b=/home/ubuntu/Project/
 #Дирриктория бэкапов
-dir_addr_r=/home/azverev/backup/
+dir_addr_r=/home/ubuntu/backup/
 #Пользователь сервера бэкапов
-remote_user=azverev
+remote_user=ubuntu
 
-#создаем файлы
-cd ~/Project/1/
-for i in {1..5}; do
-    echo $RANDOM > ${i}.sample;
-done;
+#создаем файлы для проверки
+#cd ~/Project/new/
+#for i in {1..5}; do
+#    echo $RANDOM > ${i}.sample;
+#done;
 
 #копируем на сервер
 rsync -avz ${dir_addr_b} ${remote_user}@${remote_ip}:${dir_addr_r}"$(date +"%d%m%Y")"
