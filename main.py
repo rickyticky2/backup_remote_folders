@@ -3,7 +3,15 @@ import yaml
 import getpass
 import os
 import datetime
+import logging
 
+# настройка логгера
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s [%(levelname)s]: %(message)s')
+file_handler = logging.FileHandler('app.log')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
 
 def backup_server(server):
     # Создание SSH-соединения с удаленным сервером
@@ -44,7 +52,7 @@ def backup_server(server):
         stdin, stdout, stderr = client.exec_command(command)
         exit_status = stdout.channel.recv_exit_status()
         if exit_status != 0:
-            print(f"Error creating backup on {server['name']}: {stderr.read().decode('utf-8')}")
+            logger.error(f"Error creating backup on {server['name']}: {stderr.read().decode('utf-8')}")
         else:
             # Скачивание архива с удаленного сервера
             scp = client.open_sftp()
@@ -54,7 +62,7 @@ def backup_server(server):
             local_file = os.path.join(local_dir, backup_name)
             scp.get(remote_file, local_file)
             scp.close()
-            print(f"Backup created successfully for {server['name']} and saved locally as {backup_name}")
+            logger.info(f"Backup created successfully for {server['name']} and saved locally as {backup_name}")
 
             # Удаление старых бэкапов
             if 'delete_old' in server and server['delete_old'] == True:
@@ -62,14 +70,14 @@ def backup_server(server):
                 delete_old_backups(local_file, keep_days)
 
     except Exception as e:
-        print(f"Failed to create backup for {server['name']}: {str(e)}")
+        logger.exception(f"Failed to create backup for {server['name']}: {str(e)}")
     finally:
         # Удаление архива на удаленном сервере
         remove_command = f"rm -rf {backup_name}"
         stdin, stdout, stderr = client.exec_command(remove_command)
         exit_status = stdout.channel.recv_exit_status()
         if exit_status == 0:
-            print(f"Remote backup file deleted for {server['name']}")
+            logger.info(f"Remote backup file deleted for {server['name']}")
         client.close()
 
 
@@ -92,7 +100,7 @@ def delete_old_backups(current_backup, keep_days):
         backup_date = datetime.datetime.strptime(backup_file.split('_')[1], '%Y-%m-%d_%H-%M-%S')
         if backup_date < remove_before and backup_file != os.path.basename(current_backup):
             os.remove(os.path.join(directory, backup_file))
-            print(f"Old backup file removed: {backup_file}")
+            logger.info(f"Old backup file removed: {backup_file}")
 
 # Загрузка конфигурации из файла
 with open('config.yaml') as file:
