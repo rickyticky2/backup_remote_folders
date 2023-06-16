@@ -1,0 +1,26 @@
+##local_dir_default: /home/ubuntu/Project/lanit/scripts/test
+servers:
+  - name: server1
+    hostname: 172.19.91.145
+    username: azverev
+    directory: /home/azverev/test
+    delete_old: true
+    local_dir_default: /home/ubuntu/Project/backup
+    keep_days: 7
+  - name: server3
+    hostname: 172.19.91.145
+    username: azverev
+    key: /home/ubuntu/.ssh/id_rsa
+    key_passphrase: 1234
+    directory: /home/azverev/test
+    delete_old: true
+    local_dir_default: /home/ubuntu/Project/backup
+    keep_days: 7
+  - name: server2
+    hostname: 172.19.91.145
+    username: root
+    password: xxxxx
+    directory: /home/azverev/test
+    delete_old: true
+    local_dir_default: /home/ubuntu/Project/backup
+    keep_days: 7
