@@ -5,7 +5,7 @@ import os
 import datetime
 import logging
 
-# настройка логгера
+# логгер
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s [%(levelname)s]: %(message)s')
@@ -13,8 +13,8 @@ file_handler = logging.FileHandler('app.log')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
+# Основная функция бэкапа
 def backup_server(server):
-    # Создание SSH-соединения с удаленным сервером
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
@@ -80,23 +80,20 @@ def backup_server(server):
             logger.info(f"Remote backup file deleted for {server['name']}")
         client.close()
 
-
+# Функция удаления старых бэкапов
 def delete_old_backups(current_backup, keep_days):
 
-    # Получение списка всех файлов в текущей директории
     directory = os.path.dirname(current_backup)
     all_files = os.listdir(directory)
 
     # Фильтрация только файлов с расширением tgz и содержащих имя сервера
     backup_files = [f for f in all_files if f.endswith('.tgz') and current_backup.split('_')[0] in f]
 
-    # Определение даты для удаления старых бэкапов
     now = datetime.datetime.now()
     remove_before = now - datetime.timedelta(days=keep_days)
 
     # Удаление старых бэкапов
     for backup_file in backup_files:
-        # Извлечение даты из имени файла
         backup_date = datetime.datetime.strptime(backup_file.split('_')[1], '%Y-%m-%d_%H-%M-%S')
         if backup_date < remove_before and backup_file != os.path.basename(current_backup):
             os.remove(os.path.join(directory, backup_file))
